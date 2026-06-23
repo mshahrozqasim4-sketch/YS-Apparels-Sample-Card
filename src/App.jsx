@@ -203,57 +203,60 @@ function generateCollectionPDF(data) {
 function generateStickerPDF(data) {
   const JsPDF = getJsPDF();
   if (!JsPDF) { alert("PDF library not loaded."); return; }
+  // Single sticker — exact 80×60mm — placed top-left on A4
   const doc = new JsPDF({ unit:"mm", format:[210,297] });
-  const SW=90, SH=55;
-  const positions=[[10,10],[110,10],[10,75],[110,75],[10,140],[110,140]];
+  const sx=5, sy=5, SW=80, SH=60;
 
-  positions.forEach(([sx,sy])=>{
-    doc.setFillColor(...BLACK); doc.rect(sx,sy,SW,12,"F");
-    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...WHITE);
-    doc.text("YS APPARELS",sx+SW/2,sy+6,{align:"center"});
-    doc.setFont("helvetica","normal"); doc.setFontSize(4.5); doc.setTextColor(...GOLD);
-    doc.text("THE 2ND SKIN  ·  LEATHER & LEATHER GARMENTS",sx+SW/2,sy+10,{align:"center"});
+  // Header
+  doc.setFillColor(...BLACK); doc.rect(sx,sy,SW,13,"F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(...WHITE);
+  doc.text("YS APPARELS",sx+SW/2,sy+7,{align:"center"});
+  doc.setFont("helvetica","normal"); doc.setFontSize(5); doc.setTextColor(...GOLD);
+  doc.text("THE 2ND SKIN  ·  LEATHER & LEATHER GARMENTS",sx+SW/2,sy+11.5,{align:"center"});
 
-    const rows=[
-      ["DATE",data.date,null,null],["LEATHER",data.leather,null,null],
-      ["ARTICLE",data.article,null,null],["COLOUR",data.colour,null,null],
-      ["CUSTOMER",data.customer,"L.THICK.",data.leatherThickness],
-      ["REMARKS",data.remarks,null,null],
-    ];
-    let ry=sy+13;
-    const rh=SH/rows.length - 0.2;
-    rows.forEach((row,i)=>{
-      doc.setFillColor(i%2===0?248:255,i%2===0?248:255,i%2===0?248:255);
-      doc.rect(sx,ry,SW,rh,"F");
-      doc.setDrawColor(190); doc.setLineWidth(0.2); doc.rect(sx,ry,SW,rh);
-      if(row[2]){
-        doc.setDrawColor(170); doc.line(sx+SW/2,ry,sx+SW/2,ry+rh);
-        doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
-        doc.text(row[0]+":",sx+1.5,ry+4.5);
-        doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
-        if(row[1]) doc.text(row[1],sx+19,ry+4.5);
-        doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
-        doc.text(row[2]+":",sx+SW/2+1.5,ry+4.5);
-        doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
-        if(row[3]) doc.text(row[3],sx+SW/2+16,ry+4.5);
-      } else {
-        doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
-        doc.text(row[0]+":",sx+1.5,ry+4.5);
-        doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
-        if(row[1]) doc.text(row[1],sx+20,ry+4.5);
-      }
-      ry+=rh;
-    });
+  const rows=[
+    ["DATE",data.date,null,null],
+    ["LEATHER",data.leather,null,null],
+    ["ARTICLE",data.article,null,null],
+    ["COLOUR",data.colour,null,null],
+    ["CUSTOMER",data.customer,"L.THICK.",data.leatherThickness],
+    ["REMARKS",data.remarks,null,null],
+  ];
+  let ry=sy+14;
+  const rh=(SH-14)/rows.length;
 
-    doc.setDrawColor(180); doc.setLineWidth(0.2);
-    doc.setLineDashPattern([1.5,1.5],0);
-    doc.line(sx,sy+SH,sx+SW,sy+SH);
-    doc.line(sx+SW,sy,sx+SW,sy+SH);
-    doc.setLineDashPattern([],0);
+  rows.forEach((row,i)=>{
+    doc.setFillColor(i%2===0?248:255,i%2===0?248:255,i%2===0?248:255);
+    doc.rect(sx,ry,SW,rh,"F");
+    doc.setDrawColor(190); doc.setLineWidth(0.2); doc.rect(sx,ry,SW,rh);
+    if(row[2]){
+      doc.setDrawColor(170); doc.line(sx+SW/2,ry,sx+SW/2,ry+rh);
+      doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
+      doc.text(row[0]+":",sx+1.5,ry+rh/2+1);
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
+      if(row[1]) doc.text(String(row[1]),sx+19,ry+rh/2+1);
+      doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
+      doc.text(row[2]+":",sx+SW/2+1.5,ry+rh/2+1);
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
+      if(row[3]) doc.text(String(row[3]),sx+SW/2+17,ry+rh/2+1);
+    } else {
+      doc.setFont("helvetica","bold"); doc.setFontSize(5.5); doc.setTextColor(80,80,80);
+      doc.text(row[0]+":",sx+1.5,ry+rh/2+1);
+      doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(0,0,0);
+      if(row[1]) doc.text(String(row[1]),sx+20,ry+rh/2+1);
+    }
+    ry+=rh;
   });
 
-  doc.setFont("helvetica","normal"); doc.setFontSize(6); doc.setTextColor(180,180,180);
-  doc.text("✂ Cut along dashed lines — 6 stickers per page",105,288,{align:"center"});
+  // Cut marks
+  doc.setDrawColor(160); doc.setLineWidth(0.25);
+  doc.setLineDashPattern([2,2],0);
+  doc.line(sx,sy+SH,sx+SW+8,sy+SH);
+  doc.line(sx+SW,sy-3,sx+SW,sy+SH+3);
+  doc.setLineDashPattern([],0);
+  doc.setFont("helvetica","normal"); doc.setFontSize(5.5); doc.setTextColor(180,180,180);
+  doc.text("✂ cut",sx+SW+1,sy+2);
+
   doc.save("YSApparels_MaterialSticker.pdf");
 }
 
@@ -384,7 +387,7 @@ export default function App(){
   };
 
   const tipText = tab==="sticker"
-    ? "PDF has 6 stickers on one A4 page. Print → cut along dashed lines."
+    ? "One sticker per PDF — exact 80×60mm, top-left corner of A4. Print → cut on the dashed lines."
     : "Page 1 prints top-LEFT (front). Page 2 prints top-RIGHT (back). Your duplex printer flips the paper — back aligns perfectly behind front. Cut on the dashed lines.";
 
   return(
