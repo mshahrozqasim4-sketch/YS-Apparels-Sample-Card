@@ -82,11 +82,13 @@ function generateSampleCardPDF(data) {
 
     // Footer
     doc.setFillColor(0, 0, 0);
-    doc.rect(ox, oy + CH - 9, CW, 9, "F");
+    doc.rect(ox, oy + CH - 13, CW, 13, "F");
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(4.2);
-    doc.setTextColor(200, 200, 200);
-    doc.text("Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore  |  +92 42 35965348-49  |  yasir@ysapparels.com", ox + CW / 2, oy + CH - 3.5, { align: "center" });
+    
+    doc.setFont("helvetica", "bold"); doc.setFontSize(5.5); doc.setTextColor(255, 255, 255);
+    doc.text("Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore", ox + CW / 2, oy + CH - 7.5, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(5.5); doc.setTextColor(200, 200, 200);
+    doc.text("+92 42 35965348-49  |  yasir@ysapparels.com  |  www.ysapparels.com", ox + CW / 2, oy + CH - 3, { align: "center" });
 
     // Cut marks
     doc.setDrawColor(150); doc.setLineWidth(0.2);
@@ -162,11 +164,13 @@ function generateSampleCardPDF(data) {
 
     // Footer
     doc.setFillColor(0, 0, 0);
-    doc.rect(ox, oy + CH - 9, CW, 9, "F");
+    doc.rect(ox, oy + CH - 13, CW, 13, "F");
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(4.2);
-    doc.setTextColor(200, 200, 200);
-    doc.text("Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore  |  +92 42 35965348-49  |  yasir@ysapparels.com", ox + CW / 2, oy + CH - 3.5, { align: "center" });
+    
+    doc.setFont("helvetica", "bold"); doc.setFontSize(5.5); doc.setTextColor(255, 255, 255);
+    doc.text("Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore", ox + CW / 2, oy + CH - 7.5, { align: "center" });
+    doc.setFont("helvetica", "normal"); doc.setFontSize(5.5); doc.setTextColor(200, 200, 200);
+    doc.text("+92 42 35965348-49  |  yasir@ysapparels.com  |  www.ysapparels.com", ox + CW / 2, oy + CH - 3, { align: "center" });
 
     // Cut marks
     doc.setDrawColor(150); doc.setLineWidth(0.2);
@@ -197,7 +201,7 @@ function generateCollectionPDF(data) {
   doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(255, 255, 255);
   doc.text("YS APPARELS", ox + CW / 2, oy + 7, { align: "center" });
   doc.setFont("helvetica", "normal"); doc.setFontSize(6);
-  doc.text("THE 2ND SKIN  ·  LEATHER & LEATHER GARMENTS", ox + CW / 2, oy + 12, { align: "center" });
+  doc.text("THE 2ND SKIN  ·  LEATHER GARMENTS MANUFACTURER", ox + CW / 2, oy + 12, { align: "center" });
 
   doc.setFillColor(0, 0, 0);
   doc.rect(ox + 20, oy + 18, 60, 8, "F");
@@ -244,8 +248,8 @@ function generateCollectionPDF(data) {
   });
 
   doc.setFillColor(0, 0, 0);
-  doc.rect(ox, oy + CH - 9, CW, 9, "F");
-  doc.setFont("helvetica", "normal"); doc.setFontSize(4.2); doc.setTextColor(200, 200, 200);
+  doc.rect(ox, oy + CH - 13, CW, 13, "F");
+  doc.setFont("helvetica", "normal");  doc.setTextColor(200, 200, 200);
   doc.text("Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore  |  +92 42 35965348-49  |  yasir@ysapparels.com", ox + CW / 2, oy + CH - 3.5, { align: "center" });
 
   doc.setDrawColor(150); doc.setLineWidth(0.2);
@@ -272,7 +276,7 @@ function generateStickerPDF(data) {
   doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(255, 255, 255);
   doc.text("YS APPARELS", sx + SW / 2, sy + 7, { align: "center" });
   doc.setFont("helvetica", "normal"); doc.setFontSize(5); doc.setTextColor(200, 200, 200);
-  doc.text("THE 2ND SKIN  ·  LEATHER & LEATHER GARMENTS", sx + SW / 2, sy + 11, { align: "center" });
+  doc.text("THE 2ND SKIN  ·  LEATHER GARMENTS MANUFACTURER", sx + SW / 2, sy + 11, { align: "center" });
 
   const rows = [
     ["DATE", data.date, null, null],
@@ -513,9 +517,9 @@ export default function App() {
           </div>
 
           <div style={{ background: "#111", padding: "8px 24px", textAlign: "center" }}>
-            <div style={{ color: "#555", fontSize: 9, lineHeight: 1.8 }}>
+            <div style={{ color: "#aaa", fontSize: 11, lineHeight: 2, fontWeight: 600 }}>
               Plot #106, Street #3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore<br />
-              ☎ +92 42 35965348-49 &nbsp;·&nbsp; yasir@ysapparels.com
+              ☎ +92 42 35965348-49 &nbsp;·&nbsp; yasir@ysapparels.com &nbsp;·&nbsp; www.ysapparels.com
             </div>
           </div>
         </div>
