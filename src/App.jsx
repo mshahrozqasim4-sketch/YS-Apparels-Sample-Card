@@ -10,6 +10,46 @@ const CompanyHeader = ({ compact = false }) => (
   </div>
 );
 
+function PrintInstructions({ tab, onConfirm, onCancel }) {
+  const isSample = tab === "sample";
+  const isSticker = tab === "sticker";
+  const size = isSticker ? "80mm × 60mm" : "100mm × 140mm";
+  const label = isSticker ? "Material Sticker" : isSample ? "Sample Card (2 pages: front + measurements)" : "Collection Card";
+
+  return (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div style={{ background: "#fff", borderRadius: 10, padding: 24, maxWidth: 420, width: "100%", boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}>
+        <div style={{ fontWeight: 900, fontSize: 16, color: "#1a1a2e", marginBottom: 6 }}>🖨️ Before You Print</div>
+        <div style={{ fontSize: 12, color: "#555", marginBottom: 16 }}>Printing: <strong>{label}</strong></div>
+
+        <div style={{ background: "#f5f5f5", borderRadius: 8, padding: 14, marginBottom: 16 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, color: "#1a1a2e" }}>Set these in the print dialog:</div>
+          <div style={{ fontSize: 12, lineHeight: 2 }}>
+            <div>① <strong>Destination:</strong> Choose your printer or Save as PDF</div>
+            <div>② <strong>Paper size:</strong> Select <strong style={{ color: "#c00" }}>Custom</strong> → enter <strong style={{ color: "#c00" }}>{size}</strong></div>
+            <div>③ <strong>Margins:</strong> Set to <strong>None</strong></div>
+            <div>④ <strong>Scale:</strong> Set to <strong>100%</strong> (do not fit to page)</div>
+            {isSample && <div>⑤ <strong>Pages:</strong> It will print 2 pages — front then measurements</div>}
+          </div>
+        </div>
+
+        <div style={{ background: "#fff8e1", border: "1px solid #f0c040", borderRadius: 6, padding: 10, marginBottom: 16, fontSize: 11, color: "#7a5500" }}>
+          ⚠️ If you leave paper size as A4, the card will print the wrong size and waste paper.
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "10px 0", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 7, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+            I've read this — Print Now
+          </button>
+          <button onClick={onCancel} style={{ padding: "10px 16px", background: "transparent", color: "#888", border: "1.5px solid #ddd", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SampleCardFront({ data, onChange }) {
   const f = (name, label, half = false) => (
     <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 14, ...(half ? { flex: 1 } : {}) }}>
@@ -111,7 +151,7 @@ function CollectionCard({ data, onChange }) {
 
 function MaterialSticker({ data, onChange }) {
   const rowStyle = { display: "flex", alignItems: "center", border: "2px solid #000", borderBottom: "none" };
-  const lblStyle = { fontWeight: 700, fontSize: 13, padding: "6px 10px", minWidth: 130 };
+  const lblStyle = { fontWeight: 700, fontSize: 13, padding: "6px 10px", minWidth: 130, borderRight: "2px solid #000" };
   const inpStyle = { flex: 1, border: "none", outline: "none", fontSize: 13, padding: "6px 8px", background: "transparent" };
   return (
     <div>
@@ -163,10 +203,7 @@ function printSampleCard(data) {
     thead tr{background:#ddd;font-weight:700;}
     .desc{background:#fafafa;width:52%;}
     .page2{page-break-after:auto;}
-    @media print{
-      @page{size:100mm 140mm;margin:0;}
-      body{margin:0;}
-    }
+    @media print{@page{size:100mm 140mm;margin:0;}body{margin:0;}}
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -218,10 +255,7 @@ function printCollectionCard(data) {
     td{border:1px solid #999;padding:5px 6px;}
     .lbl{font-weight:700;background:#f0f0f0;width:28%;}
     .srow td{background:#e0e0e0;font-weight:700;}
-    @media print{
-      @page{size:100mm 140mm;margin:0;}
-      body{margin:0;}
-    }
+    @media print{@page{size:100mm 140mm;margin:0;}body{margin:0;}}
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -252,10 +286,7 @@ function printSticker(data) {
     .hlbl{font-weight:700;padding:2.5px 5px;border-right:1.5px solid #000;}
     .hval{flex:1;padding:2.5px 4px;}
     .last{border-bottom:1.5px solid #000;}
-    @media print{
-      @page{size:80mm 60mm;margin:0;}
-      body{margin:0;}
-    }
+    @media print{@page{size:80mm 60mm;margin:0;}body{margin:0;}}
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -284,6 +315,7 @@ export default function App() {
   const [sampleData, setSampleData] = useState({});
   const [collData, setCollData] = useState({});
   const [stickerData, setStickerData] = useState({});
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const handleS = e => setSampleData(p => ({ ...p, [e.target.name]: e.target.value }));
   const handleC = e => setCollData(p => ({ ...p, [e.target.name]: e.target.value }));
@@ -295,8 +327,23 @@ export default function App() {
     if (tab === "sticker") setStickerData({});
   };
 
+  const handlePrintConfirm = () => {
+    setShowInstructions(false);
+    if (tab === "sample") printSampleCard(sampleData);
+    if (tab === "collection") printCollectionCard(collData);
+    if (tab === "sticker") printSticker(stickerData);
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#f0f2f5", fontFamily: "Arial, sans-serif" }}>
+      {showInstructions && (
+        <PrintInstructions
+          tab={tab}
+          onConfirm={handlePrintConfirm}
+          onCancel={() => setShowInstructions(false)}
+        />
+      )}
+
       <div style={{ background: "#1a1a2e", padding: "14px 20px", textAlign: "center" }}>
         <div style={{ color: "#fff", fontWeight: 900, fontSize: 20, letterSpacing: 3 }}>YS APPARELS</div>
         <div style={{ color: "#c9a84c", fontSize: 9, letterSpacing: 2, marginTop: 2 }}>DIGITAL FORMS SYSTEM</div>
@@ -323,11 +370,8 @@ export default function App() {
           {tab === "sticker" && <MaterialSticker data={stickerData} onChange={handleST}/>}
 
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            <button onClick={() => {
-              if (tab === "sample") printSampleCard(sampleData);
-              if (tab === "collection") printCollectionCard(collData);
-              if (tab === "sticker") printSticker(stickerData);
-            }} style={{ flex: 1, padding: "11px 0", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 7, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+            <button onClick={() => setShowInstructions(true)}
+              style={{ flex: 1, padding: "11px 0", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 7, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
               🖨️ Print / Download PDF
             </button>
             <button onClick={reset} style={{ padding: "11px 18px", background: "transparent", color: "#888", border: "1.5px solid #ddd", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>
