@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+// jsPDF loaded from CDN via index.html — we'll use window.jspdf.jsPDF
+
 const CompanyHeader = ({ compact = false }) => (
   <div style={{ marginBottom: compact ? 8 : 12 }}>
     <div style={{ fontSize: compact ? 20 : 26, fontWeight: 900, letterSpacing: 3, color: "#1a1a2e", fontFamily: "'Arial Black', sans-serif", textAlign: "center" }}>YS APPARELS</div>
@@ -9,46 +11,6 @@ const CompanyHeader = ({ compact = false }) => (
     </div>
   </div>
 );
-
-function PrintInstructions({ tab, onConfirm, onCancel }) {
-  const isSample = tab === "sample";
-  const isSticker = tab === "sticker";
-  const size = isSticker ? "80mm × 60mm" : "100mm × 140mm";
-  const label = isSticker ? "Material Sticker" : isSample ? "Sample Card (2 pages: front + measurements)" : "Collection Card";
-
-  return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-      <div style={{ background: "#fff", borderRadius: 10, padding: 24, maxWidth: 420, width: "100%", boxShadow: "0 8px 40px rgba(0,0,0,0.3)" }}>
-        <div style={{ fontWeight: 900, fontSize: 16, color: "#1a1a2e", marginBottom: 6 }}>🖨️ Before You Print</div>
-        <div style={{ fontSize: 12, color: "#555", marginBottom: 16 }}>Printing: <strong>{label}</strong></div>
-
-        <div style={{ background: "#f5f5f5", borderRadius: 8, padding: 14, marginBottom: 16 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, color: "#1a1a2e" }}>Set these in the print dialog:</div>
-          <div style={{ fontSize: 12, lineHeight: 2 }}>
-            <div>① <strong>Destination:</strong> Choose your printer or Save as PDF</div>
-            <div>② <strong>Paper size:</strong> Select <strong style={{ color: "#c00" }}>Custom</strong> → enter <strong style={{ color: "#c00" }}>{size}</strong></div>
-            <div>③ <strong>Margins:</strong> Set to <strong>None</strong></div>
-            <div>④ <strong>Scale:</strong> Set to <strong>100%</strong> (do not fit to page)</div>
-            {isSample && <div>⑤ <strong>Pages:</strong> It will print 2 pages — front then measurements</div>}
-          </div>
-        </div>
-
-        <div style={{ background: "#fff8e1", border: "1px solid #f0c040", borderRadius: 6, padding: 10, marginBottom: 16, fontSize: 11, color: "#7a5500" }}>
-          ⚠️ If you leave paper size as A4, the card will print the wrong size and waste paper.
-        </div>
-
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={onConfirm} style={{ flex: 1, padding: "10px 0", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 7, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-            I've read this — Print Now
-          </button>
-          <button onClick={onCancel} style={{ padding: "10px 16px", background: "transparent", color: "#888", border: "1.5px solid #ddd", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function SampleCardFront({ data, onChange }) {
   const f = (name, label, half = false) => (
@@ -181,127 +143,221 @@ function MaterialSticker({ data, onChange }) {
   );
 }
 
-function printSampleCard(data) {
-  const win = window.open("", "_blank");
-  const mRows = measurements.map((m, i) => `<tr><td class="desc">${m}</td><td>${data[`m_req_${i}`]||""}</td><td>${data[`m_act_${i}`]||""}</td><td>${data[`m_dev_${i}`]||""}</td></tr>`).join("");
-  win.document.write(`<html><head><title>Sample Card</title><style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:Arial,sans-serif;}
-    .page{width:100mm;padding:6mm 6mm;page-break-after:always;}
-    .co{font-size:18px;font-weight:900;letter-spacing:3px;text-align:center;}
-    .co-sub{font-size:6.5px;color:#555;text-align:center;line-height:1.6;margin-bottom:7px;}
-    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;padding:3px 16px;margin-bottom:9px;}
-    .bc{text-align:center;}
-    .field{display:flex;align-items:baseline;gap:4px;margin-bottom:9px;}
-    .field-row{display:flex;gap:8px;margin-bottom:9px;}
-    .half{flex:1;display:flex;align-items:baseline;gap:4px;}
-    .lbl{font-weight:700;font-size:10px;white-space:nowrap;}
-    .line{flex:1;border-bottom:1px solid #000;font-size:10px;padding:0 2px;min-width:20px;display:inline-block;}
-    .divider{border-bottom:1.5px solid #000;margin-bottom:3px;}
-    table{width:100%;border-collapse:collapse;font-size:8px;}
-    th,td{border:1px solid #999;padding:2.5px 4px;text-align:left;}
-    thead tr{background:#ddd;font-weight:700;}
-    .desc{background:#fafafa;width:52%;}
-    .page2{page-break-after:auto;}
-    @media print{@page{size:100mm 140mm;margin:0;}body{margin:0;}}
-  </style></head><body>
-  <div class="page">
-    <div class="co">YS APPARELS</div>
-    <div class="co-sub">Plot # 106, Street # 3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore<br>☎ +92 42 35965348-49 &nbsp; ✉ yasir@ysapparels.com</div>
-    <div class="bc"><div class="badge">SAMPLE CARD</div></div>
-    <div class="field"><span class="lbl">Style:</span><span class="line">${data.style||""}</span></div>
-    <div class="field"><span class="lbl">Leather:</span><span class="line">${data.leather||""}</span></div>
-    <div class="field-row">
-      <div class="half"><span class="lbl">Color:</span><span class="line">${data.color||""}</span></div>
-      <div class="half"><span class="lbl">Size:</span><span class="line">${data.size||""}</span></div>
-    </div>
-    <div class="field"><span class="lbl">Type of Sample:</span><span class="line">${data.typeOfSample||""}</span></div>
-    <div class="field-row">
-      <div class="half"><span class="lbl">Season:</span><span class="line">${data.season||""}</span></div>
-      <div class="half"><span class="lbl">Brand:</span><span class="line">${data.brand||""}</span></div>
-    </div>
-    <div class="field-row">
-      <div class="half"><span class="lbl">Padding Body:</span><span class="line">${data.paddingBody||""}</span></div>
-      <div class="half"><span class="lbl">Gms:</span><span class="line">${data.paddingGms||""}</span></div>
-    </div>
-    <div class="field-row">
-      <div class="half"><span class="lbl">Sleeves:</span><span class="line">${data.sleeves||""}</span></div>
-      <div class="half"><span class="lbl">Gms:</span><span class="line">${data.sleevesGms||""}</span></div>
-    </div>
-    <div class="field"><span class="lbl">Remarks:</span><span class="line">${data.remarks||""}</span></div>
-    <div class="divider"></div><div class="divider" style="margin-top:3px"></div>
-  </div>
-  <div class="page page2">
-    <div style="text-align:center;margin-bottom:8px;font-weight:900;font-size:16px;letter-spacing:2px">MEASUREMENTS</div>
-    <table><thead><tr><th>DESCRIPTION</th><th>REQUIRED</th><th>ACTUAL</th><th>DEVIATION</th></tr></thead>
-    <tbody>${mRows}</tbody></table>
-  </div>
-  </body></html>`);
-  win.document.close(); win.focus(); setTimeout(() => win.print(), 700);
+// ── PDF GENERATORS ────────────────────────────────────────────────────────────
+function getJsPDF() {
+  if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+  if (window.jsPDF) return window.jsPDF;
+  return null;
 }
 
-function printCollectionCard(data) {
-  const win = window.open("", "_blank");
-  const rows = [["Leather","leather"],["Color","color"],["Lining","lining"],["ACC","acc"],["Special Notes","specialNotes"],["Ready to Ship","readyToShip"],["Price","price"]];
-  win.document.write(`<html><head><title>Collection Card</title><style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:Arial,sans-serif;}
-    .page{width:100mm;padding:6mm 6mm;}
-    .co{font-size:18px;font-weight:900;letter-spacing:3px;text-align:center;}
-    .co-sub{font-size:6.5px;color:#555;text-align:center;line-height:1.6;margin-bottom:7px;}
-    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;padding:3px 16px;margin-bottom:9px;}
-    .bc{text-align:center;}
-    table{width:100%;border-collapse:collapse;font-size:10px;}
-    td{border:1px solid #999;padding:5px 6px;}
-    .lbl{font-weight:700;background:#f0f0f0;width:28%;}
-    .srow td{background:#e0e0e0;font-weight:700;}
-    @media print{@page{size:100mm 140mm;margin:0;}body{margin:0;}}
-  </style></head><body>
-  <div class="page">
-    <div class="co">YS APPARELS</div>
-    <div class="co-sub">Plot # 106, Street # 3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore<br>☎ +92 42 35965348-49 &nbsp; ✉ yasir@ysapparels.com</div>
-    <div class="bc"><div class="badge">SAMPLE CARD</div></div>
-    <table>
-      <tr class="srow"><td class="lbl">Style</td><td>${data.style||""}</td><td class="lbl">Collection</td><td>${data.collection||""}</td></tr>
-      ${rows.map(([l,k])=>`<tr><td class="lbl">${l}</td><td colspan="3">${data[k]||""}</td></tr>`).join("")}
-    </table>
-  </div></body></html>`);
-  win.document.close(); win.focus(); setTimeout(() => win.print(), 700);
+function pdfHeader(doc, w) {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("YS APPARELS", w / 2, 7, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(5.5);
+  doc.text("Plot # 106, Street # 3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore", w / 2, 11, { align: "center" });
+  doc.text("\u260E +92 42 35965348-49    \u2709 yasir@ysapparels.com", w / 2, 14, { align: "center" });
+  doc.setDrawColor(0); doc.setLineWidth(0.4);
+  doc.line(4, 16, w - 4, 16);
 }
 
-function printSticker(data) {
-  const win = window.open("", "_blank");
-  win.document.write(`<html><head><title>Material Sticker</title><style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:Arial,sans-serif;}
-    .page{width:80mm;height:60mm;padding:3mm 4mm;overflow:hidden;}
-    .co{font-size:13px;font-weight:900;letter-spacing:2px;text-align:center;}
-    .co-sub{font-size:5.5px;color:#555;text-align:center;line-height:1.4;margin-bottom:4px;}
-    .field{display:flex;align-items:center;border:1.5px solid #000;border-bottom:none;font-size:9px;}
-    .lbl{font-weight:700;padding:2.5px 5px;min-width:95px;border-right:1.5px solid #000;}
-    .val{flex:1;padding:2.5px 5px;}
-    .half-row{display:flex;border:1.5px solid #000;border-bottom:none;font-size:9px;}
-    .half{flex:1;display:flex;align-items:center;}
-    .half:first-child{border-right:1.5px solid #000;}
-    .hlbl{font-weight:700;padding:2.5px 5px;border-right:1.5px solid #000;}
-    .hval{flex:1;padding:2.5px 4px;}
-    .last{border-bottom:1.5px solid #000;}
-    @media print{@page{size:80mm 60mm;margin:0;}body{margin:0;}}
-  </style></head><body>
-  <div class="page">
-    <div class="co">YS APPARELS</div>
-    <div class="co-sub">Plot # 106, Street # 3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore &nbsp; ☎ +92 42 35965348-49</div>
-    <div class="field"><span class="lbl">DATE:</span><span class="val">${data.date||""}</span></div>
-    <div class="field"><span class="lbl">LEATHER:</span><span class="val">${data.leather||""}</span></div>
-    <div class="field"><span class="lbl">ARTICLE:</span><span class="val">${data.article||""}</span></div>
-    <div class="field"><span class="lbl">COLOUR:</span><span class="val">${data.colour||""}</span></div>
-    <div class="half-row">
-      <div class="half"><span class="hlbl">CUSTOMER:</span><span class="hval">${data.customer||""}</span></div>
-      <div class="half"><span class="hlbl">LEATH. THICK.:</span><span class="hval">${data.leatherThickness||""}</span></div>
-    </div>
-    <div class="field last"><span class="lbl">REMARKS:</span><span class="val">${data.remarks||""}</span></div>
-  </div></body></html>`);
-  win.document.close(); win.focus(); setTimeout(() => win.print(), 700);
+function pdfBadge(doc, label, w, y) {
+  doc.setFillColor(0, 0, 0);
+  const bw = 40, bh = 6;
+  doc.rect((w - bw) / 2, y, bw, bh, "F");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(255, 255, 255);
+  doc.text(label, w / 2, y + 4.2, { align: "center" });
+  doc.setTextColor(0, 0, 0);
+  return y + bh + 4;
+}
+
+function generateSampleCardPDF(data) {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { alert("PDF library not loaded. Please refresh the page."); return; }
+  const doc = new JsPDF({ unit: "mm", format: [100, 140] });
+  const w = 100; let y = 4;
+
+  pdfHeader(doc, w);
+  y = 18;
+  y = pdfBadge(doc, "SAMPLE CARD", w, y);
+
+  const field = (label, value, yPos) => {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+    doc.text(label + ":", 5, yPos);
+    doc.setFont("helvetica", "normal");
+    doc.setDrawColor(0); doc.setLineWidth(0.3);
+    const lx = 5 + doc.getTextWidth(label + ":") + 2;
+    doc.line(lx, yPos + 0.5, w - 5, yPos + 0.5);
+    if (value) doc.text(value, lx + 1, yPos);
+    return yPos + 7;
+  };
+
+  const halfField = (label, value, x, maxX, yPos) => {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+    doc.text(label + ":", x, yPos);
+    doc.setFont("helvetica", "normal");
+    const lx = x + doc.getTextWidth(label + ":") + 2;
+    doc.setDrawColor(0); doc.setLineWidth(0.3);
+    doc.line(lx, yPos + 0.5, maxX, yPos + 0.5);
+    if (value) doc.text(value, lx + 1, yPos);
+  };
+
+  y = field("Style", data.style || "", y);
+  y = field("Leather", data.leather || "", y);
+  halfField("Color", data.color || "", 5, 52, y);
+  halfField("Size", data.size || "", 55, w - 5, y);
+  y += 7;
+  y = field("Type of Sample", data.typeOfSample || "", y);
+  halfField("Season", data.season || "", 5, 52, y);
+  halfField("Brand", data.brand || "", 55, w - 5, y);
+  y += 7;
+  halfField("Padding Body", data.paddingBody || "", 5, 52, y);
+  halfField("Gms", data.paddingGms || "", 55, w - 5, y);
+  y += 7;
+  halfField("Sleeves", data.sleeves || "", 5, 52, y);
+  halfField("Gms", data.sleevesGms || "", 55, w - 5, y);
+  y += 7;
+  y = field("Remarks", data.remarks || "", y);
+  doc.setLineWidth(0.5); doc.line(5, y, w - 5, y); y += 3;
+  doc.line(5, y, w - 5, y);
+
+  // Page 2 — Measurements
+  doc.addPage([100, 140]);
+  y = 4;
+  doc.setFont("helvetica", "bold"); doc.setFontSize(13);
+  doc.text("MEASUREMENTS", w / 2, 10, { align: "center" });
+  y = 14;
+
+  const cols = [52, 16, 16, 16];
+  const headers = ["DESCRIPTION", "REQUIRED", "ACTUAL", "DEVIATION"];
+  const rh = 5;
+  doc.setFillColor(220, 220, 220);
+  doc.rect(4, y, 92, rh, "F");
+  doc.setDrawColor(150); doc.setLineWidth(0.2);
+  doc.rect(4, y, 92, rh);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(6.5);
+  let cx = 4;
+  headers.forEach((h, i) => {
+    doc.text(h, cx + 1, y + 3.5);
+    cx += cols[i];
+    if (i < 3) doc.line(cx, y, cx, y + rh);
+  });
+  y += rh;
+
+  doc.setFont("helvetica", "normal"); doc.setFontSize(6);
+  measurements.forEach((m, i) => {
+    if (y > 136) return;
+    doc.setFillColor(i % 2 === 0 ? 250 : 255, i % 2 === 0 ? 250 : 255, i % 2 === 0 ? 250 : 255);
+    doc.rect(4, y, 92, rh, "F");
+    doc.setDrawColor(180); doc.rect(4, y, 92, rh);
+    doc.setTextColor(0);
+    doc.text(m, 5, y + 3.5);
+    cx = 4 + cols[0];
+    const vals = [data[`m_req_${i}`]||"", data[`m_act_${i}`]||"", data[`m_dev_${i}`]||""];
+    vals.forEach((v, j) => {
+      doc.line(cx, y, cx, y + rh);
+      if (v) doc.text(v, cx + 1, y + 3.5);
+      cx += cols[j + 1];
+    });
+    y += rh;
+  });
+
+  doc.save("YSApparels_SampleCard.pdf");
+}
+
+function generateCollectionPDF(data) {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { alert("PDF library not loaded. Please refresh the page."); return; }
+  const doc = new JsPDF({ unit: "mm", format: [100, 140] });
+  const w = 100; let y = 4;
+
+  pdfHeader(doc, w);
+  y = 18;
+  y = pdfBadge(doc, "SAMPLE CARD", w, y);
+
+  const rows = [
+    ["Style", data.style||"", "Collection", data.collection||""],
+    ["Leather", data.leather||""],
+    ["Color", data.color||""],
+    ["Lining", data.lining||""],
+    ["ACC", data.acc||""],
+    ["Special Notes", data.specialNotes||""],
+    ["Ready to Ship", data.readyToShip||""],
+    ["Price", data.price||""],
+  ];
+
+  const rh = 8;
+  doc.setDrawColor(150); doc.setLineWidth(0.2);
+
+  rows.forEach((row, i) => {
+    if (i === 0) {
+      doc.setFillColor(220,220,220); doc.rect(4, y, 92, rh, "F");
+      doc.rect(4, y, 92, rh);
+      doc.setFont("helvetica","bold"); doc.setFontSize(8);
+      doc.text(row[0], 5, y+5.5);
+      doc.line(4+46, y, 4+46, y+rh);
+      doc.setFont("helvetica","normal"); doc.text(row[1], 5+46, y+5.5);
+      doc.line(4+46+24, y, 4+46+24, y+rh);
+      doc.setFont("helvetica","bold"); doc.text(row[2], 5+46+24, y+5.5);
+      doc.line(4+46+24+24, y, 4+46+24+24, y+rh);
+      doc.setFont("helvetica","normal"); doc.text(row[3], 5+46+24+24, y+5.5);
+    } else {
+      doc.setFillColor(245,245,245); doc.rect(4, y, 28, rh, "F");
+      doc.rect(4, y, 92, rh);
+      doc.line(4+28, y, 4+28, y+rh);
+      doc.setFont("helvetica","bold"); doc.setFontSize(8);
+      doc.text(row[0], 5, y+5.5);
+      doc.setFont("helvetica","normal");
+      doc.text(row[1], 5+28, y+5.5);
+    }
+    y += rh;
+  });
+
+  doc.save("YSApparels_CollectionCard.pdf");
+}
+
+function generateStickerPDF(data) {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { alert("PDF library not loaded. Please refresh the page."); return; }
+  const doc = new JsPDF({ unit: "mm", format: [80, 60] });
+  const w = 80; let y = 3;
+
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  doc.text("YS APPARELS", w / 2, y + 4, { align: "center" });
+  doc.setFont("helvetica", "normal"); doc.setFontSize(5);
+  doc.text("Plot # 106, Street # 3, Nader Chowk, Rohi Nala, 21-Km Ferozepur Road, Lahore  \u260E +92 42 35965348-49", w / 2, y + 8, { align: "center" });
+  y += 11;
+
+  const rows = [
+    ["DATE", data.date||"", null, null],
+    ["LEATHER", data.leather||"", null, null],
+    ["ARTICLE", data.article||"", null, null],
+    ["COLOUR", data.colour||"", null, null],
+    ["CUSTOMER", data.customer||"", "LEATH. THICK.", data.leatherThickness||""],
+    ["REMARKS", data.remarks||"", null, null],
+  ];
+
+  const rh = 6.5;
+  doc.setDrawColor(0); doc.setLineWidth(0.4);
+
+  rows.forEach((row) => {
+    doc.rect(3, y, 74, rh);
+    doc.setFont("helvetica","bold"); doc.setFontSize(7.5);
+    if (row[2]) {
+      doc.text(row[0]+":", 4, y+4.3);
+      doc.line(3+37, y, 3+37, y+rh);
+      doc.setFont("helvetica","normal"); doc.text(row[1], 4+22, y+4.3);
+      doc.setFont("helvetica","bold"); doc.text(row[2]+":", 4+37, y+4.3);
+      doc.setFont("helvetica","normal"); doc.text(row[3], 4+37+22, y+4.3);
+    } else {
+      doc.text(row[0]+":", 4, y+4.3);
+      doc.setFont("helvetica","normal"); doc.text(row[1], 4+24, y+4.3);
+    }
+    y += rh;
+  });
+
+  doc.save("YSApparels_MaterialSticker.pdf");
 }
 
 const TABS = [
@@ -315,7 +371,6 @@ export default function App() {
   const [sampleData, setSampleData] = useState({});
   const [collData, setCollData] = useState({});
   const [stickerData, setStickerData] = useState({});
-  const [showInstructions, setShowInstructions] = useState(false);
 
   const handleS = e => setSampleData(p => ({ ...p, [e.target.name]: e.target.value }));
   const handleC = e => setCollData(p => ({ ...p, [e.target.name]: e.target.value }));
@@ -327,23 +382,14 @@ export default function App() {
     if (tab === "sticker") setStickerData({});
   };
 
-  const handlePrintConfirm = () => {
-    setShowInstructions(false);
-    if (tab === "sample") printSampleCard(sampleData);
-    if (tab === "collection") printCollectionCard(collData);
-    if (tab === "sticker") printSticker(stickerData);
+  const handlePDF = () => {
+    if (tab === "sample") generateSampleCardPDF(sampleData);
+    if (tab === "collection") generateCollectionPDF(collData);
+    if (tab === "sticker") generateStickerPDF(stickerData);
   };
 
   return (
     <div style={{ minHeight: "100vh", background: "#f0f2f5", fontFamily: "Arial, sans-serif" }}>
-      {showInstructions && (
-        <PrintInstructions
-          tab={tab}
-          onConfirm={handlePrintConfirm}
-          onCancel={() => setShowInstructions(false)}
-        />
-      )}
-
       <div style={{ background: "#1a1a2e", padding: "14px 20px", textAlign: "center" }}>
         <div style={{ color: "#fff", fontWeight: 900, fontSize: 20, letterSpacing: 3 }}>YS APPARELS</div>
         <div style={{ color: "#c9a84c", fontSize: 9, letterSpacing: 2, marginTop: 2 }}>DIGITAL FORMS SYSTEM</div>
@@ -369,10 +415,14 @@ export default function App() {
           {tab === "collection" && <CollectionCard data={collData} onChange={handleC}/>}
           {tab === "sticker" && <MaterialSticker data={stickerData} onChange={handleST}/>}
 
-          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            <button onClick={() => setShowInstructions(true)}
+          <div style={{ background: "#e8f4e8", border: "1px solid #a0cca0", borderRadius: 6, padding: "8px 12px", marginTop: 16, fontSize: 11, color: "#2a5a2a" }}>
+            ✅ PDF downloads at exact size — no print settings needed. Just open and print.
+          </div>
+
+          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+            <button onClick={handlePDF}
               style={{ flex: 1, padding: "11px 0", background: "#1a1a2e", color: "#fff", border: "none", borderRadius: 7, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-              🖨️ Print / Download PDF
+              ⬇️ Download PDF
             </button>
             <button onClick={reset} style={{ padding: "11px 18px", background: "transparent", color: "#888", border: "1.5px solid #ddd", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>
               Reset
