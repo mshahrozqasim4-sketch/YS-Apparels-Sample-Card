@@ -57,7 +57,7 @@ function MeasurementsBack({ data, onChange }) {
       <div style={{ textAlign: "center", marginBottom: 10 }}>
         <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: 2, color: "#1a1a2e" }}>MEASUREMENTS</div>
       </div>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr><th style={th}>DESCRIPTION</th><th style={th}>REQUIRED</th><th style={th}>ACTUAL</th><th style={th}>DEVIATION</th></tr>
         </thead>
@@ -122,7 +122,7 @@ function MaterialSticker({ data, onChange }) {
             <input name={k} value={data[k]||""} onChange={onChange} style={inpStyle}/>
           </div>
         ))}
-        <div style={{ display: "flex", borderTop: "2px solid #000", borderBottom: "none", border: "2px solid #000", borderBottom: "none" }}>
+        <div style={{ display: "flex", border: "2px solid #000", borderBottom: "none" }}>
           <div style={{ flex: 1, display: "flex", alignItems: "center", borderRight: "2px solid #000" }}>
             <div style={{ ...lblStyle, fontSize: 12 }}>CUSTOMER:</div>
             <input name="customer" value={data.customer||""} onChange={onChange} style={{ ...inpStyle, fontSize: 12 }}/>
@@ -144,26 +144,29 @@ function MaterialSticker({ data, onChange }) {
 function printSampleCard(data) {
   const win = window.open("", "_blank");
   const mRows = measurements.map((m, i) => `<tr><td class="desc">${m}</td><td>${data[`m_req_${i}`]||""}</td><td>${data[`m_act_${i}`]||""}</td><td>${data[`m_dev_${i}`]||""}</td></tr>`).join("");
-  win.document.write(`<html><head><title>Sample Card – YS Apparels</title><style>
+  win.document.write(`<html><head><title>Sample Card</title><style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:Arial,sans-serif;}
-    .page{width:100mm;min-height:140mm;padding:8px 10px;page-break-after:always;}
-    .co{font-size:20px;font-weight:900;letter-spacing:3px;text-align:center;}
-    .co-sub{font-size:7px;color:#555;text-align:center;line-height:1.6;margin-bottom:8px;}
-    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:13px;letter-spacing:3px;padding:3px 18px;margin-bottom:10px;}
+    .page{width:100mm;padding:6mm 6mm;page-break-after:always;}
+    .co{font-size:18px;font-weight:900;letter-spacing:3px;text-align:center;}
+    .co-sub{font-size:6.5px;color:#555;text-align:center;line-height:1.6;margin-bottom:7px;}
+    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;padding:3px 16px;margin-bottom:9px;}
     .bc{text-align:center;}
-    .field{display:flex;align-items:baseline;gap:4px;margin-bottom:10px;}
-    .field-row{display:flex;gap:10px;margin-bottom:10px;}
+    .field{display:flex;align-items:baseline;gap:4px;margin-bottom:9px;}
+    .field-row{display:flex;gap:8px;margin-bottom:9px;}
     .half{flex:1;display:flex;align-items:baseline;gap:4px;}
-    .lbl{font-weight:700;font-size:11px;white-space:nowrap;}
-    .line{flex:1;border-bottom:1px solid #000;font-size:11px;padding:0 3px;min-width:30px;display:inline-block;}
-    .divider{border-bottom:1.5px solid #000;margin-bottom:4px;}
-    table{width:100%;border-collapse:collapse;font-size:9px;}
-    th,td{border:1px solid #999;padding:3px 5px;text-align:left;}
+    .lbl{font-weight:700;font-size:10px;white-space:nowrap;}
+    .line{flex:1;border-bottom:1px solid #000;font-size:10px;padding:0 2px;min-width:20px;display:inline-block;}
+    .divider{border-bottom:1.5px solid #000;margin-bottom:3px;}
+    table{width:100%;border-collapse:collapse;font-size:8px;}
+    th,td{border:1px solid #999;padding:2.5px 4px;text-align:left;}
     thead tr{background:#ddd;font-weight:700;}
-    .desc{background:#fafafa;}
+    .desc{background:#fafafa;width:52%;}
     .page2{page-break-after:auto;}
-    @media print{@page{size:100mm 140mm;margin:3mm;}}
+    @media print{
+      @page{size:100mm 140mm;margin:0;}
+      body{margin:0;}
+    }
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -189,10 +192,10 @@ function printSampleCard(data) {
       <div class="half"><span class="lbl">Gms:</span><span class="line">${data.sleevesGms||""}</span></div>
     </div>
     <div class="field"><span class="lbl">Remarks:</span><span class="line">${data.remarks||""}</span></div>
-    <div class="divider"></div><div class="divider" style="margin-top:4px"></div>
+    <div class="divider"></div><div class="divider" style="margin-top:3px"></div>
   </div>
   <div class="page page2">
-    <div style="text-align:center;margin-bottom:10px;font-weight:900;font-size:18px;letter-spacing:2px">MEASUREMENTS</div>
+    <div style="text-align:center;margin-bottom:8px;font-weight:900;font-size:16px;letter-spacing:2px">MEASUREMENTS</div>
     <table><thead><tr><th>DESCRIPTION</th><th>REQUIRED</th><th>ACTUAL</th><th>DEVIATION</th></tr></thead>
     <tbody>${mRows}</tbody></table>
   </div>
@@ -203,19 +206,22 @@ function printSampleCard(data) {
 function printCollectionCard(data) {
   const win = window.open("", "_blank");
   const rows = [["Leather","leather"],["Color","color"],["Lining","lining"],["ACC","acc"],["Special Notes","specialNotes"],["Ready to Ship","readyToShip"],["Price","price"]];
-  win.document.write(`<html><head><title>Collection Card – YS Apparels</title><style>
+  win.document.write(`<html><head><title>Collection Card</title><style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:Arial,sans-serif;}
-    .page{width:100mm;min-height:140mm;padding:8px 10px;}
-    .co{font-size:20px;font-weight:900;letter-spacing:3px;text-align:center;}
-    .co-sub{font-size:7px;color:#555;text-align:center;line-height:1.6;margin-bottom:8px;}
-    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:13px;letter-spacing:3px;padding:3px 18px;margin-bottom:10px;}
+    .page{width:100mm;padding:6mm 6mm;}
+    .co{font-size:18px;font-weight:900;letter-spacing:3px;text-align:center;}
+    .co-sub{font-size:6.5px;color:#555;text-align:center;line-height:1.6;margin-bottom:7px;}
+    .badge{display:inline-block;background:#000;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;padding:3px 16px;margin-bottom:9px;}
     .bc{text-align:center;}
-    table{width:100%;border-collapse:collapse;font-size:11px;}
-    td{border:1px solid #999;padding:5px 7px;}
+    table{width:100%;border-collapse:collapse;font-size:10px;}
+    td{border:1px solid #999;padding:5px 6px;}
     .lbl{font-weight:700;background:#f0f0f0;width:28%;}
     .srow td{background:#e0e0e0;font-weight:700;}
-    @media print{@page{size:100mm 140mm;margin:3mm;}}
+    @media print{
+      @page{size:100mm 140mm;margin:0;}
+      body{margin:0;}
+    }
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -231,20 +237,25 @@ function printCollectionCard(data) {
 
 function printSticker(data) {
   const win = window.open("", "_blank");
-  win.document.write(`<html><head><title>Material Sticker – YS Apparels</title><style>
+  win.document.write(`<html><head><title>Material Sticker</title><style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:Arial,sans-serif;}
-    .page{width:80mm;height:60mm;padding:5px 7px;overflow:hidden;}
-    .co{font-size:14px;font-weight:900;letter-spacing:2px;text-align:center;}
-    .co-sub{font-size:6px;color:#555;text-align:center;line-height:1.4;margin-bottom:5px;}
-    .field{display:flex;align-items:center;border:1.5px solid #000;border-bottom:none;font-size:10px;}
-    .lbl{font-weight:700;padding:3px 6px;min-width:110px;border-right:1.5px solid #000;}
-    .val{flex:1;padding:3px 6px;}
-    .half-row{display:flex;border:1.5px solid #000;border-bottom:none;font-size:10px;}
+    .page{width:80mm;height:60mm;padding:3mm 4mm;overflow:hidden;}
+    .co{font-size:13px;font-weight:900;letter-spacing:2px;text-align:center;}
+    .co-sub{font-size:5.5px;color:#555;text-align:center;line-height:1.4;margin-bottom:4px;}
+    .field{display:flex;align-items:center;border:1.5px solid #000;border-bottom:none;font-size:9px;}
+    .lbl{font-weight:700;padding:2.5px 5px;min-width:95px;border-right:1.5px solid #000;}
+    .val{flex:1;padding:2.5px 5px;}
+    .half-row{display:flex;border:1.5px solid #000;border-bottom:none;font-size:9px;}
     .half{flex:1;display:flex;align-items:center;}
     .half:first-child{border-right:1.5px solid #000;}
+    .hlbl{font-weight:700;padding:2.5px 5px;border-right:1.5px solid #000;}
+    .hval{flex:1;padding:2.5px 4px;}
     .last{border-bottom:1.5px solid #000;}
-    @media print{@page{size:80mm 60mm;margin:2mm;}}
+    @media print{
+      @page{size:80mm 60mm;margin:0;}
+      body{margin:0;}
+    }
   </style></head><body>
   <div class="page">
     <div class="co">YS APPARELS</div>
@@ -254,8 +265,8 @@ function printSticker(data) {
     <div class="field"><span class="lbl">ARTICLE:</span><span class="val">${data.article||""}</span></div>
     <div class="field"><span class="lbl">COLOUR:</span><span class="val">${data.colour||""}</span></div>
     <div class="half-row">
-      <div class="half"><span class="lbl">CUSTOMER:</span><span class="val">${data.customer||""}</span></div>
-      <div class="half"><span class="lbl" style="min-width:105px">LEATHER THICKNESS:</span><span class="val">${data.leatherThickness||""}</span></div>
+      <div class="half"><span class="hlbl">CUSTOMER:</span><span class="hval">${data.customer||""}</span></div>
+      <div class="half"><span class="hlbl">LEATH. THICK.:</span><span class="hval">${data.leatherThickness||""}</span></div>
     </div>
     <div class="field last"><span class="lbl">REMARKS:</span><span class="val">${data.remarks||""}</span></div>
   </div></body></html>`);
