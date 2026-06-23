@@ -30,7 +30,7 @@ function generateSampleCardPDF(data) {
     doc.text("YS APPARELS", ox + CW / 2, oy + 7, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(6);
-    doc.text("THE 2ND SKIN  ·  LEATHER & LEATHER GARMENTS", ox + CW / 2, oy + 12, { align: "center" });
+    doc.text("THE 2ND SKIN  ·  LEATHER GARMENTS MANUFACTURER", ox + CW / 2, oy + 12, { align: "center" });
 
     // SAMPLE CARD badge
     doc.setFillColor(0, 0, 0);
